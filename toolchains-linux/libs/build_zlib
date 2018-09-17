@@ -7,6 +7,9 @@ mkdir -p "${cache}"
 cp -r "${EXT_UNPACK_DIR}/zlib" "${cache}"
 cd "${cache}/zlib"
 
+CFLAGS="${CFLAGS} -fPIC" 
+CXXFLAGS="${CXXFLAGS} -fPIC" 
+
 ./configure --static --prefix="${SYSROOT}"
 
 make
