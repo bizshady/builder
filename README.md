@@ -15,8 +15,8 @@ Linux x64:
 - Any x64 Linux distro with libc >= 2.23 (untested but should work)
 
 Android
-- armeabi-v7a: Android API level 19 (KitKat 4.4+)
-- arm64-v8a: Android API level 24 (Nougat 7.0+) 
+- armeabi-v7a: Android API level 19 (KitKat 4.4+) (No hardware AES)
+- arm64-v8a: Android API level 24 (Nougat 7.0+) (Hardware AES)
 
 Support is also underway for
 
@@ -63,9 +63,7 @@ Currently available build configurations are:
 
 Future options (Currently in progress):
 - `build make windows x64`
-- `build make linux-arm aarch64`
-- `build make linux-arm armeabi`
-- `build make linux-arm armeabihf`
+- `build make linux-arm xxx`
 
 ## Additional: Running the CLI on Android
 
