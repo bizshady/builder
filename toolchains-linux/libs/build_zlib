@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cache="${LIB_DIR}/build/zlib-${ARCH}"
+rm -rf "${cache}"
+mkdir -p "${cache}"
+
+cp -r "${EXT_UNPACK_DIR}/zlib" "${cache}"
+cd "${cache}/zlib"
+
+./configure --static --prefix="${SYSROOT}"
+
+make
+make install

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+export AC="${NDK}/bin/${HOST_COMPILER}"
+
+export CC="${AC}-clang"
+export CXX="${AC}-clang++"
+export LD="${AC}-ld"
+export AS="${AC}-as"
+export AR="${AC}-ar"
+export RANLIB="${AC}-ranlib"

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source ${ROOT_DIR}/version
+echo Building NERVA ${NERVA_VERSION}
+
+export DL_CACHE_DIR="${ROOT_DIR}/.dl-cache"
+export NDK_VER="android-ndk-r17c"
+export BOOST_VER_DOT="1.68.0"
+export BOOST_VER_US="boost_1_68_0"
+export NDK_DL_LINK="https://dl.google.com/android/repository/${NDK_VER}-linux-x86_64.zip"
+export BOOST_DL_LINK="https://dl.bintray.com/boostorg/release/${BOOST_VER_DOT}/source/${BOOST_VER_US}.tar.gz"
+
+function clean()
+{
+	# Stop and remove all containers
+	docker stop $(docker ps -aq)
+	docker rm $(docker ps -aq)
+
+	# Remove only untagged images
+	docker rmi -f $(docker images -f dangling=true -q)
+}
+
+function purge()
+{
+	# Stop and remove all containers
+	docker stop $(docker ps -aq)
+	docker rm $(docker ps -aq)
+
+	# Remove all images
+	docker rmi -f $(docker images -q)
+
+	docker rmi android:armv7
+	docker rmi android:arm64v8a
+	docker rmi linux:x64
+	docker rmi windows:x64
+
+	sudo fstrim -v /
+	exit 0
+}
+
+cd ${ROOT_DIR}
+$1
+clean

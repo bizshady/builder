@@ -1,0 +1,29 @@
+#!/bin/bash -e
+
+export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "#!/bin/bash -e" > "${ROOT_DIR}/env"
+
+if [ "$1" == "armv7" ]; then
+	echo "export ARCH=android-armv7" >> "${ROOT_DIR}/env"
+	echo "export NDK_ARCH=arm" >> "${ROOT_DIR}/env"
+	echo "export HOST_COMPILER=arm-linux-androideabi" >> "${ROOT_DIR}/env"
+	echo "export ANDROID_API=19" >> "${ROOT_DIR}/env"
+	echo "export ELF_ARCH=ARM" >> "${ROOT_DIR}/env"
+	echo "export ELF_CLASS=ELF32" >> "${ROOT_DIR}/env"
+	echo "export CMAKE_ARCH=armv7-a" >> "${ROOT_DIR}/env"
+	echo "export CMAKE_ABI=armeabi-v7a" >> "${ROOT_DIR}/env"
+elif [ "$1" == "arm64v8a" ]; then
+	echo "export ARCH=android-arm64v8a" >> "${ROOT_DIR}/env"
+	echo "export NDK_ARCH=arm64" >> "${ROOT_DIR}/env"
+	echo "export HOST_COMPILER=aarch64-linux-android" >> "${ROOT_DIR}/env"
+	echo "export ANDROID_API=24" >> "${ROOT_DIR}/env"
+	echo "export ELF_ARCH=AArch64" >> "${ROOT_DIR}/env"
+	echo "export ELF_CLASS=ELF64" >> "${ROOT_DIR}/env"
+	echo "export CMAKE_ARCH=armv8-a" >> "${ROOT_DIR}/env"
+	echo "export CMAKE_ABI=arm64-v8a" >> "${ROOT_DIR}/env"
+else
+	echo "Invalid configuration. Valid options are:"
+	echo "arm64v8a"
+	echo "armv7"
+fi

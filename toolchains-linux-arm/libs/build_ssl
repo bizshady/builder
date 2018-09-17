@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source "${LIB_DIR}/compiler"
+
+if [ ${ARCH} == "aarch64" ]; then
+    export AA="linux-aarch64"
+else
+    export AA="linux-armv4"
+fi
+
+cache="${LIB_DIR}/build/openssl-${ARCH}"
+rm -rf "${cache}"
+mkdir -p "${cache}"
+
+cp -r "${EXT_UNPACK_DIR}/openssl" "${cache}"
+cd "${cache}/openssl"
+
+./Configure --static --prefix="${SYSROOT}" -fPIC  \
+--with-zlib-include="${SYSROOT}/include" --with-zlib-lib="${SYSROOT}/lib" \
+$AA no-asm no-shared
+
+make
+make install

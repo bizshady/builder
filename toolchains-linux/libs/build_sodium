@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cache="${LIB_DIR}/build/sodium-${ARCH}"
+rm -rf "${cache}"
+mkdir -p "${cache}"
+
+cp -r "${EXT_UNPACK_DIR}/libsodium" "${cache}"
+cd "${cache}/libsodium"
+
+./autogen.sh
+./configure \
+    --disable-soname-versions \
+    --enable-shared=no \
+    --enable-static=yes \
+    --prefix="${SYSROOT}"
+
+make
+make install

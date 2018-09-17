@@ -1,0 +1,111 @@
+#!/bin/bash -e
+
+export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ ! -f "${ROOT_DIR}/env" ]; then
+	echo "No configuration found. Please run ./configure"
+	exit 1
+fi
+
+source ${ROOT_DIR}/env
+
+export DL_CACHE_DIR="${ROOT_DIR}/.dl-cache"
+export EXT_PACK_DIR="${ROOT_DIR}/.ext-packed"
+export EXT_UNPACK_DIR="${ROOT_DIR}/.ext-unpacked"
+export LIB_DIR="${ROOT_DIR}/libs"
+export BOOST_VER_DOT="1.68.0"
+export BOOST_VER_US="boost_1_68_0"
+
+export BOOST_DL_LINK="https://dl.bintray.com/boostorg/release/${BOOST_VER_DOT}/source/${BOOST_VER_US}.tar.gz"
+
+export SYSROOT="/usr/${HOST_COMPILER}"
+export XNV_BIN_DIR="${LIB_DIR}/build/nerva-${ARCH}/bin"
+
+function unpack()
+{
+	path="${EXT_PACK_DIR}/$1"
+
+	if [ ! -d "${path}" ]; then
+		tar xJf ${path}.tar.xz -C ${EXT_UNPACK_DIR}
+	fi
+}
+
+function init()
+{
+	cd "${ROOT_DIR}"
+
+	if [ ! -d ${EXT_UNPACK_DIR} ]; then
+		mkdir ${EXT_UNPACK_DIR}
+	fi
+
+	# Unpack Boost
+	if [ ! -d "${EXT_UNPACK_DIR}/boost" ]; then	
+		tar xzf "${DL_CACHE_DIR}/${BOOST_VER_US}.tar.gz" -C ${EXT_UNPACK_DIR}
+		mv "${EXT_UNPACK_DIR}/${BOOST_VER_US}" "${EXT_UNPACK_DIR}/boost"
+	fi
+	
+	unpack "zlib"
+	unpack "openssl"
+	unpack "libsodium"
+	unpack "libzmq"
+	unpack "cppzmq"
+}
+
+function boost()
+{
+	"${LIB_DIR}/build_boost"
+}
+
+function zlib()
+{
+	"${LIB_DIR}/build_zlib"
+}
+
+function ssl()
+{
+	"${LIB_DIR}/build_ssl"
+}
+
+function sodium()
+{
+	"${LIB_DIR}/build_sodium"
+}
+
+function zmq()
+{
+	"${LIB_DIR}/build_zmq"
+
+	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
+	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+}
+
+function environment()
+{
+	init
+
+	"${LIB_DIR}/build_boost"
+	"${LIB_DIR}/build_zlib"
+	"${LIB_DIR}/build_ssl"
+	"${LIB_DIR}/build_sodium"
+	"${LIB_DIR}/build_zmq"
+
+	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
+	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+}
+
+function nerva()
+{
+	"${LIB_DIR}/build_nerva"
+}
+
+function package()
+{
+	dll_dir=/usr/lib/gcc/${HOST_COMPILER}/6.3-win32
+	
+	cp ${dll_dir}/libgcc_s_seh-1.dll ${XNV_BIN_DIR}/libgcc_s_seh-1.dll
+	cp ${dll_dir}/libstdc++-6.dll ${XNV_BIN_DIR}/libstdc++-6.dll
+
+	zip -rj "${ROOT_DIR}/nerva-$1_${ARCH}.zip" ${XNV_BIN_DIR}/*
+}
+
+$1 $2

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+NERVA_DIR="${ROOT_DIR}/nerva"
+
+cache="${LIB_DIR}/build/nerva-${ARCH}"
+rm -rf "${cache}"
+mkdir -p "${cache}/translations"
+
+cd "${cache}"
+PATH="${SYSROOT}/include:${SYSROOT}/lib:$PATH"
+
+cmake -D BUILD_TESTS=OFF -D STATIC=ON -D BUILD_64=ON -D ARCH="x86-64" -D CMAKE_BUILD_TYPE=release \
+-D BUILD_TAG=${ARCH} -D INSTALL_VENDORED_LIBUNBOUND=ON "${NERVA_DIR}"
+make -j4

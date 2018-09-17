@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source "${LIB_DIR}/compiler"
+
+cache="${LIB_DIR}/build/libzmq-${ARCH}"
+rm -rf "${cache}"
+mkdir -p "${cache}"
+
+cp -r "${EXT_UNPACK_DIR}/libzmq" "${cache}"
+cd "${cache}/libzmq"
+
+./autogen.sh
+./configure \
+    --without-docs \
+    --disable-curve-keygen \
+    --enable-libunwind=no \
+    --enable-shared=no \
+    --enable-static=yes \
+    --with-libsodium="${SYSROOT}" \
+    --host="${HOST_COMPILER}" \
+    --with-sysroot="${SYSROOT}" \
+    --prefix="${SYSROOT}"
+
+make
+make install

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source "${LIB_DIR}/compiler"
+
+if [ ${ARCH} == "android-armv7" ]; then
+    export SSL_SED_CMD="s/mandroid/target\ armv7\-none\-linux\-androideabi/"
+    export AA="android-armv7"
+elif [ ${ARCH} == "android-arm64v8a" ]; then
+    export SSL_SED_CMD="s/mandroid/target\ aarch64\-none\-linux\-android/"
+    export AA="android"
+fi
+
+cache="${LIB_DIR}/build/openssl-${ARCH}"
+rm -rf "${cache}"
+mkdir -p "${cache}"
+
+cp -r "${EXT_UNPACK_DIR}/openssl" "${cache}"
+cd "${cache}/openssl"
+sed -i -e "${SSL_SED_CMD}" Configure
+
+./Configure --static --prefix="${SYSROOT}" \
+--with-zlib-include="${SYSROOT}/include" --with-zlib-lib="${SYSROOT}/lib" \
+$AA no-asm no-shared
+
+make
+make install
