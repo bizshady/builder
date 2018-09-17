@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 RUN apt update && apt upgrade --yes
 RUN apt install --no-install-recommends --yes \
 	nano zip unzip tar xz-utils ca-certificates cmake g++ make pkg-config \

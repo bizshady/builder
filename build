@@ -1,18 +1,5 @@
 #!/bin/bash
 
-# Supported Platforms
-# android armv7
-# android arm64v8a
-
-# linux x64
-
-# linux-arm aarch64
-# linux-arm armeabi
-# linux-arm armeabihf
-
-# Compile but don't run
-# Windows x64 - Boost.Locale error on target system
-
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source ${ROOT_DIR}/version
