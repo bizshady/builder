@@ -12,3 +12,5 @@ COPY /.ext-packed/ /opt/toolchain/.ext-packed/
 
 RUN /opt/toolchain/configure x64 && \
 	/opt/toolchain/build environment
+
+RUN rm -rf /opt/toolchain/libs/build

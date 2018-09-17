@@ -7,9 +7,6 @@ mkdir -p "${cache}"
 cp -r "${EXT_UNPACK_DIR}/libsodium" "${cache}"
 cd "${cache}/libsodium"
 
-CFLAGS="${CFLAGS} -fPIC" 
-CXXFLAGS="${CXXFLAGS} -fPIC" 
-
 ./autogen.sh
 ./configure \
     --disable-soname-versions \

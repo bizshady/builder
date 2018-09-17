@@ -9,10 +9,7 @@ This toochain is only tested on Ubuntu 17.10. No support is provided for any oth
 This toolchain produces binaries targeting:  
 
 Linux x64:
-- Ubuntu: 16.04+
-- Fedora: 24+
-- Debian: 9 (Stretch)+
-- Any x64 Linux distro with libc >= 2.23 (untested but should work)
+- Any x64 Linux distro with libc >= 2.24 (untested but should work)
 
 Android
 - armeabi-v7a: Android API level 19 (KitKat 4.4+) (No hardware AES)

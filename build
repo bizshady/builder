@@ -95,14 +95,33 @@ function make()
 	--build-arg NERVA_VERSION=${NERVA_VERSION} \
 	-t ${i} -f ./dockerfiles/build/$platform.Dockerfile .
 
-	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
-	docker run -i --name ${c} -t ${i} /bin/true
-	docker cp ${c}:/opt/toolchain/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
-	docker rm ${c}
+	fetch
 }
 
-function all()
+function run()
 {
+	CONTAINER_NAME=run_tmp
+
+	[ "$(docker ps -a | grep ${CONTAINER_NAME})" ] && docker rm ${CONTAINER_NAME}
+	docker run -i --name ${CONTAINER_NAME} -t $1 /bin/bash
+	docker rm ${CONTAINER_NAME}
+}
+
+function rebuild()
+{
+	${ROOT_DIR}/clean
+
+	init
+
+	images=( "android:armv7" "android:arm64v8a" "linux:x64" "windows:x64" )
+
+	for i in "${images[@]}"
+	do
+		if [ $(checkimage $i) == 1 ]; then
+			docker rmi $i
+		fi
+	done
+
 	make android armv7
 	make android arm64v8a
 
@@ -113,15 +132,6 @@ function all()
 	
 	#Win64 comiles but gives errors from boost.local at runtime
 	#make windows x64
-}
-
-function run()
-{
-	CONTAINER_NAME=run_tmp
-
-	[ "$(docker ps -a | grep ${CONTAINER_NAME})" ] && docker rm ${CONTAINER_NAME}
-	docker run -i --name ${CONTAINER_NAME} -t $1 /bin/bash
-	#docker rm ${CONTAINER_NAME}
 }
 
 cd ${ROOT_DIR}

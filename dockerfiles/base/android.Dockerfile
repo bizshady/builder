@@ -14,3 +14,5 @@ RUN /opt/toolchain/configure arm64v8a && \
 
 RUN /opt/toolchain/configure armv7 && \
 	/opt/toolchain/build environment
+
+RUN rm -rf /opt/toolchain/libs/build

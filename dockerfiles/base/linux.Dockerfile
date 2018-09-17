@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:stable
 RUN apt update && apt upgrade --yes
 RUN apt install --no-install-recommends --yes \
 	nano zip unzip tar xz-utils ca-certificates cmake g++ make pkg-config \
@@ -11,3 +11,5 @@ COPY /.ext-packed/ /opt/toolchain/.ext-packed/
 
 RUN /opt/toolchain/configure x64 && \
 	/opt/toolchain/build environment
+
+RUN rm -rf /opt/toolchain/libs/build
