@@ -50,10 +50,6 @@ function init()
 }
 
 # baseimage <platform>
-# <platform> =	android
-#				linux
-#				linux-arm
-#				windows
 function baseimage()
 {
 	iname=builder:$1
@@ -79,6 +75,8 @@ function fetch()
 	docker cp ${c}:/opt/toolchain/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
 	docker rm ${c}
 }
+
+#make <platform> <arch>
 
 function make()
 {
