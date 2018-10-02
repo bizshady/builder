@@ -11,7 +11,8 @@ cd "${cache}/boost"
 
 echo "using gcc : : ${HOST_COMPILER}-g++ ;" > "${cache}/user-config.jam"
 
-./bootstrap.sh --with-icu="${SYSROOT}"
+./bootstrap.sh --without-icu
+#--with-icu="${SYSROOT}"
 
 BUILD_DIR="${cache}/output"
 PATH="${SYSROOT}/bin:${SYSROOT}/include:${SYSROOT}/lib:$PATH"

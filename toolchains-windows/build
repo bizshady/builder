@@ -50,6 +50,7 @@ function init()
 	unpack "libzmq"
 	unpack "cppzmq"
 	unpack "icu"
+	unpack "curl"
 }
 
 function environment()
@@ -62,9 +63,14 @@ function environment()
 	"${LIB_DIR}/build_ssl"
 	"${LIB_DIR}/build_sodium"
 	"${LIB_DIR}/build_zmq"
-
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+}
+
+function curl()
+{
+	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
 }
 
 function nerva()

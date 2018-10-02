@@ -9,6 +9,7 @@ RUN apt install --no-install-recommends --yes \
 COPY /toolchains-windows /opt/toolchain/
 COPY /.dl-cache/ /opt/toolchain/.dl-cache/
 COPY /.ext-packed/ /opt/toolchain/.ext-packed/
+COPY /nerva/ /opt/toolchain/nerva/
 
 RUN /opt/toolchain/configure x64 && \
 	/opt/toolchain/build environment

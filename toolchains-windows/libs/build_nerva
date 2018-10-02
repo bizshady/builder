@@ -15,7 +15,9 @@ make
 cd "${cache}"
 source ${ROOT_DIR}/libs/compiler
 
+CFLAGS="${CFLAGS} -DCURL_STATICLIB"
+
 cmake -D CMAKE_TOOLCHAIN_FILE="${NERVA_DIR}/cmake/${ARCH}-cross-compile.cmake" -D BUILD_TESTS=OFF \
 -D STATIC=ON -D BUILD_64=ON -D ARCH="x86-64" -D CMAKE_BUILD_TYPE=release \
 -D CMAKE_SYSTEM_NAME="Windows" -D BUILD_TAG=${ARCH} "${NERVA_DIR}"
-make -j4
+make -j6

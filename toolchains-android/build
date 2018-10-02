@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -58,6 +58,7 @@ function init()
 	unpack "libsodium"
 	unpack "libzmq"
 	unpack "cppzmq"
+	unpack "curl"
 }
 
 function environment()
@@ -75,9 +76,9 @@ function environment()
 	"${LIB_DIR}/build_ssl"
 	"${LIB_DIR}/build_sodium"
 	"${LIB_DIR}/build_zmq"
-
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+	"${LIB_DIR}/build_curl"
 }
 
 function nerva()

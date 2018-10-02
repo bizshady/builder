@@ -93,7 +93,7 @@ function make()
 	--build-arg NERVA_VERSION=${NERVA_VERSION} \
 	-t ${i} -f ./dockerfiles/build/$platform.Dockerfile .
 
-	fetch
+	fetch $platform $arch
 }
 
 function run()
@@ -119,11 +119,10 @@ function rebuild()
 			docker rmi $i
 		fi
 	done
-
+	
+	make linux x64
 	make android armv7
 	make android arm64v8a
-
-	make linux x64
 
 	#todo: x86 seems to fail building boost. investigate, or not...
 	#make windows x86
