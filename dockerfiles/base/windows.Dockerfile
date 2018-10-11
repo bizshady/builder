@@ -6,10 +6,9 @@ RUN apt install --no-install-recommends --yes \
 	g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev \
 	g++-mingw-w64-i686 gcc-mingw-w64-i686 mingw-w64-i686-dev
 
-COPY /toolchains-windows /opt/toolchain/
-COPY /.dl-cache/ /opt/toolchain/.dl-cache/
-COPY /.ext-packed/ /opt/toolchain/.ext-packed/
-COPY /nerva/ /opt/toolchain/nerva/
+COPY /toolchains/windows /opt/toolchain/
+COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/
+COPY /toolchains/.ext-packed/ /opt/toolchain/.ext-packed/
 
 RUN /opt/toolchain/configure x64 && \
 	/opt/toolchain/build environment

@@ -1,0 +1,4 @@
+
+RUN apt update && apt upgrade -y && \
+    apt install -y git zip build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev \
+    libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libcurl4-openssl-dev

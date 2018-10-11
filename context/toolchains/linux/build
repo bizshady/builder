@@ -49,6 +49,7 @@ function init()
 	unpack "libsodium"
 	unpack "libzmq"
 	unpack "cppzmq"
+	unpack "curl"
 }
 
 function boost()
@@ -79,6 +80,12 @@ function zmq()
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
 }
 
+function curl()
+{
+	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
+}
+
 function environment()
 {
 	init
@@ -91,6 +98,9 @@ function environment()
 
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+
+	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
 }
 
 function nerva()

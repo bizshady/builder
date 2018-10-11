@@ -7,9 +7,9 @@ RUN apt install --no-install-recommends --yes \
 	g++-arm-linux-gnueabi gcc-arm-linux-gnueabi cpp-arm-linux-gnueabi \
 	g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf cpp-arm-linux-gnueabihf
 
-COPY /toolchains-linux-arm /opt/toolchain/
-COPY /.dl-cache/ /opt/toolchain/.dl-cache/
-COPY /.ext-packed/ /opt/toolchain/.ext-packed/
+COPY /toolchains/linux-arm /opt/toolchain/
+COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/
+COPY /toolchains/.ext-packed/ /opt/toolchain/.ext-packed/
 
 RUN /opt/toolchain/configure aarch64 && \
 	/opt/toolchain/build environment

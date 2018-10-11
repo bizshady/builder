@@ -76,6 +76,42 @@ function fetch()
 	docker rm ${c}
 }
 
+function dynamic()
+{
+	platform=$1
+	arch=$2
+
+	i=nerva_$platform:$arch
+
+	dockerfile="${ROOT_DIR}/context/src/${platform}_${arch}.Dockerfile"
+
+	if [ -f "${dockerfile}" ]; then
+		rm ${dockerfile}
+	fi
+
+	echo "FROM ${i}" > "${dockerfile}"
+	cat "${ROOT_DIR}/dockerfiles/dynamic/${platform}.deps" >> "${dockerfile}"
+	echo "ARG NERVA_VERSION" >> "${dockerfile}"
+	echo "ARG BUILD_ARCH" >> "${dockerfile}"
+	echo "COPY /nerva/ /opt/nerva/"  >> "${dockerfile}"
+
+	docker build \
+	--build-arg BUILD_ARCH=${arch} \
+	--build-arg NERVA_VERSION=${NERVA_VERSION} \
+	-t ${i} -f ./context/src/${platform}_${arch}.Dockerfile ./context/src
+
+	c=$platform_$arch
+
+	buildcmd="/opt/nerva/builder docker_build release ${NERVA_VERSION}"
+
+	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
+	docker run -i --name ${c} -t ${i} ${dockercmd}
+	docker cp ${c}:/opt/nerva/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
+	docker rm ${c}
+
+	rm ${dockerfile}
+}
+
 #make <platform> <arch>
 
 function make()
@@ -86,12 +122,14 @@ function make()
 	i=$platform:$arch
 	c=$platform_$arch
 
+	docker rmi ${platform}:${arch}
+
 	baseimage $platform
 
 	docker build \
 	--build-arg BUILD_ARCH=${arch} \
 	--build-arg NERVA_VERSION=${NERVA_VERSION} \
-	-t ${i} -f ./dockerfiles/build/$platform.Dockerfile .
+	-t ${i} -f ./dockerfiles/build/$platform.Dockerfile ./context
 
 	fetch $platform $arch
 }
@@ -123,6 +161,18 @@ function rebuild()
 	make linux x64
 	make android armv7
 	make android arm64v8a
+
+	dynamic ubuntu 16.04
+	dynamic ubuntu 17.10
+	dynamic ubuntu 18.04
+
+	dynamic debian stable
+	dynamic debian testing
+	dynamic debian unstable
+
+	dynamic fedora 27
+	dynamic fedora 28
+	dynamic fedora 29
 
 	#todo: x86 seems to fail building boost. investigate, or not...
 	#make windows x86

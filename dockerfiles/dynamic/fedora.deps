@@ -1,0 +1,5 @@
+
+RUN dnf update -y && \
+    dnf install -y git make zip automake cmake gcc-c++ boost-devel miniupnpc-devel graphviz \
+    doxygen unbound-devel libunwind-devel pkgconfig cppzmq-devel openssl-devel libcurl-devel \
+    --setopt=install_weak_deps=False
