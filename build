@@ -89,7 +89,7 @@ function dynamic()
 		rm ${dockerfile}
 	fi
 
-	echo "FROM ${i}" > "${dockerfile}"
+	echo "FROM $platform:$arch" > "${dockerfile}"
 	cat "${ROOT_DIR}/dockerfiles/dynamic/${platform}.deps" >> "${dockerfile}"
 	echo "ARG NERVA_VERSION" >> "${dockerfile}"
 	echo "ARG BUILD_ARCH" >> "${dockerfile}"
