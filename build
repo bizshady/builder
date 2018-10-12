@@ -105,7 +105,7 @@ function dynamic()
 	buildcmd="/opt/nerva/builder docker_build release ${NERVA_VERSION}"
 
 	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
-	docker run -i --name ${c} -t ${i} ${dockercmd}
+	docker run -i --name ${c} -t ${i} ${buildcmd}
 	docker cp ${c}:/opt/nerva/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
 	docker rm ${c}
 
