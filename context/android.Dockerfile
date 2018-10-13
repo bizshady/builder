@@ -8,11 +8,11 @@ RUN apt install --no-install-recommends --yes \
 COPY /toolchains/android /opt/toolchain/
 COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/
 COPY /toolchains/.ext-packed/ /opt/toolchain/.ext-packed/
+COPY /src/nerva/ /opt/toolchain/nerva/
 
-RUN /opt/toolchain/configure arm64v8a && \
-	/opt/toolchain/build environment
+ARG NERVA_VERSION
+ARG BUILD_ARCH
 
-RUN /opt/toolchain/configure armv7 && \
-	/opt/toolchain/build environment
-
-RUN rm -rf /opt/toolchain/libs/build
+RUN /opt/toolchain/configure ${BUILD_ARCH} && \
+	/opt/toolchain/build environment && \
+	rm -rf /opt/toolchain/libs/build

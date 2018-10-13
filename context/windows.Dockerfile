@@ -6,11 +6,14 @@ RUN apt install --no-install-recommends --yes \
 	g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev \
 	g++-mingw-w64-i686 gcc-mingw-w64-i686 mingw-w64-i686-dev
 
+ARG NERVA_VERSION
+ARG BUILD_ARCH
+
 COPY /toolchains/windows /opt/toolchain/
 COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/
 COPY /toolchains/.ext-packed/ /opt/toolchain/.ext-packed/
+COPY /src/nerva/ /opt/toolchain/nerva/
 
-RUN /opt/toolchain/configure x64 && \
-	/opt/toolchain/build environment
-
-RUN rm -rf /opt/toolchain/libs/build
+RUN /opt/toolchain/configure ${BUILD_ARCH} && \
+	/opt/toolchain/build environment && \
+	rm -rf /opt/toolchain/libs/build

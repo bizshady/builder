@@ -5,7 +5,7 @@ export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source ${ROOT_DIR}/version
 echo Building NERVA ${NERVA_VERSION}
 
-export DL_CACHE_DIR="${ROOT_DIR}/.dl-cache"
+export DL_CACHE_DIR="${ROOT_DIR}/context/toolchains/.dl-cache"
 export NDK_VER="android-ndk-r17c"
 export BOOST_VER_DOT="1.68.0"
 export BOOST_VER_US="boost_1_68_0"
@@ -40,13 +40,7 @@ function init()
 		wget -q --show-progress ${BOOST_DL_LINK} -O "${DL_CACHE_DIR}/${BOOST_VER_US}.tar.gz"
 	fi
 
-	# Download/update NERVA
-	if [ ! -d "${ROOT_DIR}/nerva" ]; then
-		git clone --recursive https://bitbucket.org/nerva-project/nerva
-	else
-		cd "${ROOT_DIR}/nerva"
-		git pull
-	fi
+	git submodule update --remote --merge --recursive
 }
 
 # baseimage <platform>
@@ -60,20 +54,6 @@ function baseimage()
 	else
 		echo "Base image already exists"
 	fi
-}
-
-function fetch()
-{
-	platform=$1
-	arch=$2
-
-	i=$platform:$arch
-	c=$platform_$arch
-
-	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
-	docker run -i --name ${c} -t ${i} /bin/true
-	docker cp ${c}:/opt/toolchain/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
-	docker rm ${c}
 }
 
 function dynamic()
@@ -90,7 +70,7 @@ function dynamic()
 	fi
 
 	echo "FROM $platform:$arch" > "${dockerfile}"
-	cat "${ROOT_DIR}/dockerfiles/dynamic/${platform}.deps" >> "${dockerfile}"
+	cat "${ROOT_DIR}/deps/${platform}.deps" >> "${dockerfile}"
 	echo "ARG NERVA_VERSION" >> "${dockerfile}"
 	echo "ARG BUILD_ARCH" >> "${dockerfile}"
 	echo "COPY /nerva/ /opt/nerva/"  >> "${dockerfile}"
@@ -102,36 +82,37 @@ function dynamic()
 
 	c=$platform_$arch
 
-	buildcmd="/opt/nerva/builder docker_build release ${NERVA_VERSION}"
+	buildcmd="/opt/nerva/builder docker_build_dynamic_linux ${NERVA_VERSION}"
 
 	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
-	docker run -i --name ${c} -t ${i} ${buildcmd}
+	docker run --env NERVA_BUILD_DISTRO=${platform} --env NERVA_BUILD_DISTRO_VERSION=${arch} -i --name ${c} -t ${i} ${buildcmd}
 	docker cp ${c}:/opt/nerva/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
 	docker rm ${c}
 
 	rm ${dockerfile}
 }
 
-#make <platform> <arch>
-
-function make()
+function static()
 {
 	platform=$1
 	arch=$2
 
-	i=$platform:$arch
+	i=nerva_$platform:$arch
 	c=$platform_$arch
-
-	docker rmi ${platform}:${arch}
-
-	baseimage $platform
 
 	docker build \
 	--build-arg BUILD_ARCH=${arch} \
 	--build-arg NERVA_VERSION=${NERVA_VERSION} \
-	-t ${i} -f ./dockerfiles/build/$platform.Dockerfile ./context
+	-t ${i} -f ./context/${platform}.Dockerfile ./context
+	
+	c=$platform_$arch
 
-	fetch $platform $arch
+	buildcmd="/opt/toolchain/build nerva ${NERVA_VERSION}"
+
+	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
+	docker run -i --name ${c} -t ${i} ${buildcmd}
+	docker cp ${c}:/opt/toolchain/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
+	docker rm ${c}
 }
 
 function run()
@@ -143,42 +124,41 @@ function run()
 	docker rm ${CONTAINER_NAME}
 }
 
-function rebuild()
+function all_static()
 {
-	${ROOT_DIR}/clean
+	static linux x64
+	static android armv7
+	static android arm64v8a
+}
 
-	init
-
-	images=( "android:armv7" "android:arm64v8a" "linux:x64" "windows:x64" )
-
-	for i in "${images[@]}"
-	do
-		if [ $(checkimage $i) == 1 ]; then
-			docker rmi $i
-		fi
-	done
-	
-	make linux x64
-	make android armv7
-	make android arm64v8a
-
+function ubuntu()
+{
 	dynamic ubuntu 16.04
 	dynamic ubuntu 17.10
 	dynamic ubuntu 18.04
+}
 
+function debian()
+{
 	dynamic debian stable
 	dynamic debian testing
 	dynamic debian unstable
+}
 
+function fedora()
+{
 	dynamic fedora 27
 	dynamic fedora 28
 	dynamic fedora 29
+}
 
-	#todo: x86 seems to fail building boost. investigate, or not...
-	#make windows x86
-	
-	#Win64 comiles but gives errors from boost.local at runtime
-	#make windows x64
+function all()
+{
+	all_static
+
+	ubuntu
+	debian
+	fedora
 }
 
 cd ${ROOT_DIR}

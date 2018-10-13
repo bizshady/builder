@@ -11,7 +11,7 @@ cd "${cache}/translations"
 cmake "${NERVA_DIR}/translations"
 make
 
-# Cross compile NERVA for Windows
+# Cross compile NERVA for ARM
 cd "${cache}"
 source "${LIB_DIR}/compiler"
 

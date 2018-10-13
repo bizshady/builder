@@ -15,11 +15,8 @@ export EXT_UNPACK_DIR="${ROOT_DIR}/.ext-unpacked"
 export LIB_DIR="${ROOT_DIR}/libs"
 export BOOST_VER_DOT="1.68.0"
 export BOOST_VER_US="boost_1_68_0"
-
 export BOOST_DL_LINK="https://dl.bintray.com/boostorg/release/${BOOST_VER_DOT}/source/${BOOST_VER_US}.tar.gz"
-
 export SYSROOT="/usr/${HOST_COMPILER}"
-export XNV_BIN_DIR="${LIB_DIR}/build/nerva-${ARCH}/bin"
 
 function unpack()
 {
@@ -49,6 +46,7 @@ function init()
 	unpack "libsodium"
 	unpack "libzmq"
 	unpack "cppzmq"
+	unpack "curl"
 }
 
 function boost()
@@ -79,6 +77,12 @@ function zmq()
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
 }
 
+function curl()
+{
+	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
+}
+
 function environment()
 {
 	init
@@ -91,21 +95,20 @@ function environment()
 
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+
+	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
+}
+
+function package()
+{
+	zip -rj "${ROOT_DIR}/nerva-$1_${ARCH}.zip" ${XNV_BIN_DIR}/*
 }
 
 function nerva()
 {
 	"${LIB_DIR}/build_nerva"
-}
-
-function package()
-{
-	dll_dir=/usr/lib/gcc/${HOST_COMPILER}/6.3-win32
-	
-	cp ${dll_dir}/libgcc_s_seh-1.dll ${XNV_BIN_DIR}/libgcc_s_seh-1.dll
-	cp ${dll_dir}/libstdc++-6.dll ${XNV_BIN_DIR}/libstdc++-6.dll
-
-	zip -rj "${ROOT_DIR}/nerva-$1_${ARCH}.zip" ${XNV_BIN_DIR}/*
+	package $1
 }
 
 $1 $2

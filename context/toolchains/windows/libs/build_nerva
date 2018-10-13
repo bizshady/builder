@@ -13,7 +13,7 @@ make
 
 # Cross compile NERVA for Windows
 cd "${cache}"
-source ${ROOT_DIR}/libs/compiler
+source "${LIB_DIR}/compiler"
 
 CFLAGS="${CFLAGS} -DCURL_STATICLIB"
 

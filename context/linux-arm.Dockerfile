@@ -10,12 +10,11 @@ RUN apt install --no-install-recommends --yes \
 COPY /toolchains/linux-arm /opt/toolchain/
 COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/
 COPY /toolchains/.ext-packed/ /opt/toolchain/.ext-packed/
+COPY /src/nerva/ /opt/toolchain/nerva/
 
-RUN /opt/toolchain/configure aarch64 && \
-	/opt/toolchain/build environment
+ARG NERVA_VERSION
+ARG BUILD_ARCH
 
-#RUN /opt/toolchain/configure armeabi && \
-#	/opt/toolchain/build environment
-
-#RUN /opt/toolchain/configure armeabihf && \
-#	/opt/toolchain/build environment
+RUN /opt/toolchain/configure ${BUILD_ARCH} && \
+	/opt/toolchain/build environment && \
+	rm -rf /opt/toolchain/libs/build

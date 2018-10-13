@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -61,6 +61,40 @@ function init()
 	unpack "curl"
 }
 
+function boost()
+{
+	"${LIB_DIR}/build_boost"
+}
+
+function zlib()
+{
+	"${LIB_DIR}/build_zlib"
+}
+
+function ssl()
+{
+	"${LIB_DIR}/build_ssl"
+}
+
+function sodium()
+{
+	"${LIB_DIR}/build_sodium"
+}
+
+function zmq()
+{
+	"${LIB_DIR}/build_zmq"
+
+	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
+	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+}
+
+function curl()
+{
+	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
+}
+
 function environment()
 {
 	init
@@ -76,19 +110,24 @@ function environment()
 	"${LIB_DIR}/build_ssl"
 	"${LIB_DIR}/build_sodium"
 	"${LIB_DIR}/build_zmq"
+
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq.hpp" "${SYSROOT}/include/zmq.hpp"
 	cp "${EXT_UNPACK_DIR}/cppzmq/zmq_addon.hpp" "${SYSROOT}/include/zmq_addon.hpp"
+
 	"${LIB_DIR}/build_curl"
+	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
+}
+
+function package()
+{
+	ver=$1
+	zip -rj "${ROOT_DIR}/nerva-${ver}_${ARCH}.zip" ${XNV_BIN_DIR}/*
 }
 
 function nerva()
 {
 	"${LIB_DIR}/build_nerva"
-}
-
-function package()
-{
-	zip -rj "${ROOT_DIR}/nerva-$1_${ARCH}.zip" ${XNV_BIN_DIR}/*
+	package $1
 }
 
 $1 $2
