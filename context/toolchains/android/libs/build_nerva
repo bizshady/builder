@@ -2,20 +2,13 @@
 
 NERVA_DIR="${ROOT_DIR}/nerva"
 
-cache="${LIB_DIR}/build/nerva-${ARCH}"
-rm -rf "${cache}"
-mkdir -p "${cache}/translations"
-
-# Build the translations on host architecture
-cd "${cache}/translations"
-cmake "${NERVA_DIR}/translations"
+mkdir -p ${NERVA_DIR}/builder/build/release/translations
+cd ${NERVA_DIR}/builder/build/release/translations
+cmake ${NERVA_DIR}/translations
 make
 
-# Cross compile NERVA for ARM
-cd "${cache}"
+cd ${NERVA_DIR}/builder
 source "${LIB_DIR}/compiler"
-
-cmake -D BUILD_TESTS=OFF -D ARCH=${CMAKE_ARCH} -D STATIC=ON -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release \
--D ANDROID=true -D BUILD_TAG=${ARCH} -D CMAKE_SYSTEM_NAME="Android" -D CMAKE_ANDROID_STANDALONE_TOOLCHAIN="${NDK}" \
--D INSTALL_VENDORED_LIBUNBOUND=ON -D CMAKE_ANDROID_ARCH_ABI=${CMAKE_ABI} "${NERVA_DIR}"
-make -j6
+export NERVA_BUILD_DISTRO=android
+export NERVA_BUILD_DISTRO_VERSION=${NERVA_ARCH}
+./android-builder build-release

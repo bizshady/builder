@@ -2,8 +2,8 @@
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-source ${ROOT_DIR}/version
-echo Building NERVA ${NERVA_VERSION}
+source ${ROOT_DIR}/context/src/nerva/builder/helpers
+detectversion
 
 export DL_CACHE_DIR="${ROOT_DIR}/.dl-cache"
 export NDK_VER="android-ndk-r17c"

@@ -2,8 +2,8 @@
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-source ${ROOT_DIR}/version
-echo Building NERVA ${NERVA_VERSION}
+source ${ROOT_DIR}/context/src/nerva/builder/helpers
+detectversion
 
 export DL_CACHE_DIR="${ROOT_DIR}/context/toolchains/.dl-cache"
 export NDK_VER="android-ndk-r17c"
@@ -27,7 +27,11 @@ function checkimage()
 function init()
 {
 	if [ ! -d "${ROOT_DIR}/builds" ]; then
-		mkdir "${ROOT_DIR}/builds"
+		mkdir -p "${ROOT_DIR}/builds"
+	fi
+
+	if [ ! -d "${DL_CACHE_DIR}" ]; then
+		mkdir -p "${DL_CACHE_DIR}"
 	fi
 
 	# Download the Android NDK
@@ -82,11 +86,11 @@ function dynamic()
 
 	c=$platform_$arch
 
-	buildcmd="/opt/nerva/builder docker_build_dynamic_linux ${NERVA_VERSION}"
+	buildcmd="/opt/nerva/builder/linux-dynamic"
 
 	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
 	docker run --env NERVA_BUILD_DISTRO=${platform} --env NERVA_BUILD_DISTRO_VERSION=${arch} -i --name ${c} -t ${i} ${buildcmd}
-	docker cp ${c}:/opt/nerva/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
+	docker cp ${c}:/opt/nerva/nerva-v${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
 	docker rm ${c}
 
 	rm ${dockerfile}
@@ -107,11 +111,11 @@ function static()
 	
 	c=$platform_$arch
 
-	buildcmd="/opt/toolchain/build nerva ${NERVA_VERSION}"
+	buildcmd="/opt/toolchain/build nerva"
 
 	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
 	docker run -i --name ${c} -t ${i} ${buildcmd}
-	docker cp ${c}:/opt/toolchain/nerva-${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
+	docker cp ${c}:/opt/toolchain/nerva/nerva-v${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
 	docker rm ${c}
 }
 
