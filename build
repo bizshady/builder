@@ -93,7 +93,7 @@ function dynamic()
 
 	c=$platform_$arch
 
-	buildcmd="/opt/nerva/builder/linux-dynamic"
+	buildcmd="/opt/nerva/builder/linux build-release"
 
 	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
 	docker run --env NERVA_BUILD_DISTRO=${platform} --env NERVA_BUILD_DISTRO_VERSION=${arch} -i --name ${c} -t ${i} ${buildcmd}
