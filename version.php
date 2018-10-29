@@ -1,1 +1,0 @@
-<?php define('CLI_VERSION', 'v0.1.4.1'); define('CLI_CODENAME', 'Raptor'); define('GUI_VERSION', 'v0.0.2.1'); define('GUI_CODENAME', 'Beta-2'); define('UBUNTU_LINKS', array('16.04', '17.10', '18.04')); define('FEDORA_LINKS', array('27', '28', '29')); define('DEBIAN_LINKS', array('stable', 'testing', 'unstable')); define('ANDROID_LINKS', array('armv7', 'arm64v8a')); ?>

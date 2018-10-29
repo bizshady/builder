@@ -4,10 +4,30 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source ${dir}/context/src/nerva/builder/helpers
 detectversion
 
-rm ${dir}/version.php
-verfile=$(sed -e "s/{NERVA_VERSION}/${NERVA_VERSION}/" -e "s/{NERVA_CODENAME}/${NERVA_CODENAME}/" ${dir}/version.php.template)
-echo $verfile > ${dir}/version.php
-exit 1
+function generateversionfile()
+{
+
+  template=$(curl -s https://getnerva.org/content/version.php.template)
+  json=$(curl -s https://getnerva.org/getbinaries.php)
+
+  cli=($(echo "$json" | jq '.cli_version' | tr -d '"v'))
+  gui=($(echo "$json" | jq '.gui_version' | tr -d '"v'))
+
+  cli_ver=$(echo ${cli[0]} | tr -d ':')
+  cli_name=${cli[1]}
+
+  gui_ver=$(echo ${gui[0]} | tr -d ':')
+  gui_name=${gui[1]}
+
+  rm ${dir}/version.php
+  verfile=$(echo "$template" | \
+    sed -e "s/{CLI_VER}/${NERVA_VERSION}/" -e "s/{CLI_NAME}/${NERVA_CODENAME}/" -e "s/{GUI_VER}/${gui_ver}/" -e "s/{GUI_NAME}/${gui_name}/")
+  echo "$verfile" > "${dir}/version.php"
+
+}
+
+generateversionfile
+exit 0
 
 files=($(find ${dir}/builds/*.zip))
 for item in ${files[*]}
@@ -24,3 +44,4 @@ do
   f=$(basename $item)
   scp $item $1:/var/www/html/content/binaries/$f
 done
+
