@@ -2,6 +2,15 @@
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+if [ ! -d "${ROOT_DIR}/context/src/nerva" ]; then
+	cd ${ROOT_DIR}/context/src
+	git clone --recursive https://bitbucket.org/nerva-project/nerva
+else
+	cd ${ROOT_DIR}/context/src/nerva
+	git pull
+fi
+
+
 source ${ROOT_DIR}/context/src/nerva/builder/helpers
 detectversion
 
@@ -43,8 +52,6 @@ function init()
 	if [ ! -f "${DL_CACHE_DIR}/${BOOST_VER_US}.tar.gz" ]; then	
 		wget -q --show-progress ${BOOST_DL_LINK} -O "${DL_CACHE_DIR}/${BOOST_VER_US}.tar.gz"
 	fi
-
-	git submodule update --remote --merge --recursive
 }
 
 # baseimage <platform>
