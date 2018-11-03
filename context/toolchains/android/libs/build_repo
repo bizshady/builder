@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NERVA_DIR="${ROOT_DIR}/nerva"
+NERVA_DIR="${ROOT_DIR}/$1"
 
 mkdir -p ${NERVA_DIR}/builder/build/release/translations
 cd ${NERVA_DIR}/builder/build/release/translations
@@ -11,4 +11,4 @@ cd ${NERVA_DIR}/builder
 source "${LIB_DIR}/compiler"
 export NERVA_BUILD_DISTRO=android
 export NERVA_BUILD_DISTRO_VERSION=${NERVA_ARCH}
-./android-builder build-release
+./android-builder

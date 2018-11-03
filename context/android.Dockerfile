@@ -15,4 +15,3 @@ RUN /opt/toolchain/configure ${BUILD_ARCH} && \
 	/opt/toolchain/build environment && \
 	rm -rf /opt/toolchain/libs/build
 
-COPY /src/nerva/ /opt/toolchain/nerva/

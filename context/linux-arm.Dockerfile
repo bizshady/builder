@@ -10,7 +10,6 @@ RUN apt install --no-install-recommends --yes \
 COPY /toolchains/linux-arm /opt/toolchain/
 COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/
 COPY /toolchains/.ext-packed/ /opt/toolchain/.ext-packed/
-COPY /src/nerva/ /opt/toolchain/nerva/
 
 ARG NERVA_VERSION
 ARG BUILD_ARCH

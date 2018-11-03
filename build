@@ -2,16 +2,22 @@
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+if [ -z ${REPO} ]; then
+	export REPO=nerva
+fi
+
+echo Building ${REPO}
+
 if [ ! -d "${ROOT_DIR}/context/src/nerva" ]; then
 	cd ${ROOT_DIR}/context/src
-	git clone --recursive https://bitbucket.org/nerva-project/nerva
+	git clone --recursive https://bitbucket.org/nerva-project/${REPO}
 else
-	cd ${ROOT_DIR}/context/src/nerva
+	cd ${ROOT_DIR}/context/src/${REPO}
 	git pull
 fi
 
 
-source ${ROOT_DIR}/context/src/nerva/builder/helpers
+source ${ROOT_DIR}/context/src/${REPO}/builder/helpers
 detectversion
 
 export DL_CACHE_DIR="${ROOT_DIR}/context/toolchains/.dl-cache"
@@ -69,10 +75,11 @@ function baseimage()
 
 function dynamic()
 {
+	#todo: needs updating
 	platform=$1
 	arch=$2
 
-	i=nerva_$platform:$arch
+	i=${REPO}_$platform:$arch
 
 	dockerfile="${ROOT_DIR}/context/src/${platform}_${arch}.Dockerfile"
 
@@ -108,68 +115,55 @@ function static()
 	platform=$1
 	arch=$2
 
-	i=nerva_$platform:$arch
-	c=$platform_$arch
+	iname="nerva_${platform}:${arch}"
+	cname="${REPO}_${platform}_${arch}"
 
-	docker build \
-	--build-arg BUILD_ARCH=${arch} \
-	--build-arg NERVA_VERSION=${NERVA_VERSION} \
-	-t ${i} -f ./context/${platform}.Dockerfile ./context
+	if [ $(checkimage ${iname}) == 0 ]; then
+		docker build \
+		--build-arg BUILD_ARCH=${arch} \
+		--build-arg NERVA_VERSION=${NERVA_VERSION} \
+		-t ${iname} -f ./context/${platform}.Dockerfile ./context
+	else
+		echo "Image already exists, skipping"
+	fi
 	
 	c=$platform_$arch
 
-	buildcmd="/opt/toolchain/build nerva"
-
-	[ "$(docker ps -a | grep ${c})" ] && docker rm ${c}
-	docker run -i --name ${c} -t ${i} ${buildcmd}
-	docker cp ${c}:/opt/toolchain/nerva/nerva-v${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
-	docker rm ${c}
+	if [ ! "$(docker ps -a | grep ${cname})" ]; then
+		docker create -i --name ${cname} -t ${iname}
+		docker cp ${ROOT_DIR}/context/src/${REPO} ${cname}:/opt/toolchain/${REPO}
+	else
+		docker start ${cname}
+		docker exec -it ${cname} /bin/bash -c "cd /opt/toolchain/${REPO} && git pull"
+	fi
+	docker cp ${ROOT_DIR}/context/src/${REPO} ${cname}:/opt/toolchain/${REPO}
+	docker start ${cname}
+	docker exec -it ${cname} /bin/bash -c "/opt/toolchain/build repo ${REPO}"
+	docker cp ${cname}:/opt/toolchain/${REPO}/${REPO}-v${NERVA_VERSION}_$platform-$arch.zip ${ROOT_DIR}/builds
 }
 
-function run()
+function exec()
 {
-	CONTAINER_NAME=run_tmp
+	platform=$1
+	arch=$2
+	cname="${REPO}_${platform}_${arch}"
 
-	[ "$(docker ps -a | grep ${CONTAINER_NAME})" ] && docker rm ${CONTAINER_NAME}
-	docker run -i --name ${CONTAINER_NAME} -t $1 /bin/bash
-	docker rm ${CONTAINER_NAME}
-}
-
-function all_static()
-{
-	static linux x64
-	static android armv7
-	static android arm64v8a
-}
-
-function ubuntu()
-{
-	dynamic ubuntu 16.04
-	dynamic ubuntu 17.10
-	dynamic ubuntu 18.04
-}
-
-function debian()
-{
-	dynamic debian stable
-	dynamic debian testing
-	dynamic debian unstable
-}
-
-function fedora()
-{
-	dynamic fedora 27
-	dynamic fedora 28
-	dynamic fedora 29
+	docker exec -it ${cname} /bin/bash
 }
 
 function all()
 {
-	all_static
+	export REPO=nerva
 
-	ubuntu
-	debian
-	fedora
+	static linux x64
+	static android armv7
+	static android arm64v8a
+
+	export REPO=slate
+
+	static linux x64
+	static android armv7
+	static android arm64v8a
 }
 
 cd ${ROOT_DIR}

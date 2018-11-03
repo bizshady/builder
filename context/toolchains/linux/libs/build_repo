@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NERVA_DIR="${ROOT_DIR}/nerva"
+NERVA_DIR="${ROOT_DIR}/$1"
 PATH="${SYSROOT}/include:${SYSROOT}/lib:$PATH"
 
 cd ${NERVA_DIR}/builder
-./linux-builder build-release
+./linux-builder

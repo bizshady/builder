@@ -1,5 +1,5 @@
 context/src/*.Dockerfile
-context/src/nerva
+context/src/*
 .dl-cache
 builds
 version.php

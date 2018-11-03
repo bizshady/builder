@@ -84,9 +84,9 @@ function environment()
 	cp -r "${EXT_UNPACK_DIR}/curl/include/curl" "${SYSROOT}/include"
 }
 
-function nerva()
+function repo()
 {
-	"${LIB_DIR}/build_nerva"
+	"${LIB_DIR}/build_repo" $1
 }
 
 $1 $2
