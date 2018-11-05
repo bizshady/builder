@@ -2,7 +2,7 @@ FROM debian:stable
 RUN apt update && apt upgrade --yes
 RUN apt install --no-install-recommends --yes \
 	sudo git curl ca-certificates nano zip unzip tar xz-utils cmake g++ make pkg-config \
-	libtool-bin autoconf automake
+	libtool-bin autoconf automake build-essential cmake pkg-config
 
 COPY /toolchains/linux /opt/toolchain/
 COPY /toolchains/.dl-cache/ /opt/toolchain/.dl-cache/

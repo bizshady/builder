@@ -131,6 +131,7 @@ function static()
 
 	if [ ! "$(docker ps -a | grep ${cname})" ]; then
 		docker create -i --name ${cname} -t ${iname}
+		rm -rf ${ROOT_DIR}/context/src/${REPO}/builder/build
 		docker cp ${ROOT_DIR}/context/src/${REPO} ${cname}:/opt/toolchain/${REPO}
 	else
 		docker start ${cname}
