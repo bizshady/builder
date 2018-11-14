@@ -8,13 +8,13 @@ fi
 
 echo Building ${REPO}
 
-if [ ! -d "${ROOT_DIR}/context/src/nerva" ]; then
-	cd ${ROOT_DIR}/context/src
-	git clone --recursive https://bitbucket.org/nerva-project/${REPO}
-else
-	cd ${ROOT_DIR}/context/src/${REPO}
-	git pull
-fi
+#if [ ! -d "${ROOT_DIR}/context/src/${REPO}" ]; then
+#	cd ${ROOT_DIR}/context/src
+#	git clone --recursive https://bitbucket.org/nerva-project/${REPO}
+#else
+#	cd ${ROOT_DIR}/context/src/${REPO}
+#	git pull
+#fi
 
 
 source ${ROOT_DIR}/context/src/${REPO}/builder/helpers
