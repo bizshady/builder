@@ -3,7 +3,3 @@
 # Stop and remove all containers
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
-
-# Remove only untagged images
-docker rmi -f $(docker images -f dangling=true -q)
-sudo fstrim -v /

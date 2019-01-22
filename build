@@ -154,14 +154,6 @@ function exec()
 
 function all()
 {
-	export REPO=nerva
-
-	static linux x64
-	static android armv7
-	static android arm64v8a
-
-	export REPO=slate
-
 	static linux x64
 	static android armv7
 	static android arm64v8a
